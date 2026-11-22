@@ -15,13 +15,22 @@ use PDO;
  */
 final class LotFinder
 {
-    /** eBay queries used to sweep for graded-card lots. */
+    /**
+     * eBay queries used to sweep for graded-card lots: query => search all of
+     * eBay (true for non-sport cards, which sit outside the card-games category).
+     */
     private const QUERIES = [
-        'pokemon card lot psa',
-        'graded pokemon lot',
-        'mtg graded card lot',
-        'yugioh graded card lot',
-        'psa graded tcg lot',
+        'pokemon card lot psa'           => false,
+        'graded pokemon lot'             => false,
+        'mtg graded card lot'            => false,
+        'yugioh graded card lot'         => false,
+        'one piece graded card lot'      => false,
+        'psa graded tcg lot'             => false,
+        'lorcana graded card lot'        => false,
+        'star wars graded card lot'      => true,
+        'marvel graded card lot'         => true,
+        'dragon ball graded card lot'    => true,
+        'graded non sport card lot'      => true,
     ];
 
     /** Create the lots table when missing (idempotent). */
@@ -93,8 +102,8 @@ final class LotFinder
         self::ensureTable($pdo);
 
         $seen = [];
-        foreach (self::QUERIES as $q) {
-            foreach ($ebay->search($q, 'PSA', 'AUCTION', 50) as $item) {
+        foreach (self::QUERIES as $q => $anyCategory) {
+            foreach ($ebay->search($q, 'PSA', 'AUCTION', 50, $anyCategory) as $item) {
                 $id    = (string) $item['ebay_item_id'];
                 $title = (string) $item['title'];
                 // Must actually read like a multi-card lot.

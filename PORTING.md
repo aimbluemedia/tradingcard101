@@ -1,7 +1,9 @@
 # TradingCard101 — ported from SportCard101
 
 This is a full copy of the SportCard101 codebase re-pointed at collectible card
-games (Pokémon, Magic: The Gathering, Yu-Gi-Oh!, One Piece, Lorcana, Digimon).
+games and other collectible cards: Pokémon, Magic: The Gathering, One Piece,
+Yu-Gi-Oh!, Disney, Star Wars, Marvel / DC, Anime Trading Cards, Entertainment,
+and Gaming & Fantasy.
 Every feature came across: the eBay scanner, the AI opportunity engine, sold
 comps, the Morning Playbook, Snap Shot, bulk lots, high-bid leaderboards and
 demand profiles, the error-card catalogue, inventory, alerts, the member area,
@@ -11,7 +13,7 @@ the admin area and the landing page.
 
 | Sports concept | Gaming concept | Where |
 | --- | --- | --- |
-| `card_sports()` — baseball, basketball, football, hockey, golf | `card_games()` — pokemon, magic, yugioh, onepiece, lorcana, digimon | `src/helpers.php` |
+| `card_sports()` — baseball, basketball, football, hockey, golf | `card_games()` — pokemon, magic, onepiece, yugioh, disney, starwars, marveldc, anime, entertainment, gaming | `src/helpers.php` |
 | `card_brands()` — Topps, Panini, Bowman, Upper Deck… | publishers **and set families** — WotC era, modern Pokémon, Magic, Yu-Gi-Oh!, One Piece, Lorcana, Digimon | `src/helpers.php` |
 | `hof_players()` — Hall of Fame athletes | `chase_cards()` — the cards that carry a set (Charizard, Black Lotus, Blue-Eyes…) | `src/helpers.php` |
 | `rookie` flag | `first_ed` flag — 1st Edition is the gaming premium marker | schema, alerts, auctions |
@@ -31,6 +33,16 @@ check it from the build environment. Override it without touching code:
 
 Narrow it to the individual-cards child category if sealed product and bulk
 lots turn out to be noise in your scans.
+
+### Categories search eBay with their own terms
+
+Each entry in `card_games()` has a `query` — the text actually sent to eBay
+(for example Marvel / DC searches `(marvel, dc comics, batman, superman,
+spider-man, x-men)`) — so the stored key is never searched literally. Disney,
+Star Wars, Marvel / DC, Anime, and Entertainment set `any_category`, which
+searches all of eBay: those cards are mostly filed under non-sport trading
+cards, outside the card-games category. Tune the queries against live results;
+custom member searches are still sent exactly as typed.
 
 ### Renames that needed judgement, not search-and-replace
 

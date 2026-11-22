@@ -26,11 +26,15 @@ final class DealFinder
      */
     public function scanSearch(array $search): array
     {
+        // Built-in channels store a category key ("marveldc"); send eBay the
+        // real search terms for it.
+        [$query, $anyCategory] = \card_game_search((string) $search['keywords']);
         $listings = $this->ebay->search(
-            $search['keywords'],
+            $query,
             $search['grade'],
             $search['buying_option'],
-            $this->scanLimit
+            $this->scanLimit,
+            $anyCategory
         );
         // The eBay round-trip (and the previous channel's AI call) can outlast
         // MySQL's idle timeout — make sure the link is live before writing.

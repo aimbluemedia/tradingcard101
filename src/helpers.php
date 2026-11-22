@@ -207,16 +207,43 @@ function epn_search_link(string $keywords): string
     return epn_link($base);
 }
 
-/** Card games we organise auction channels by: key => [label, emoji]. */
+/**
+ * Card categories we organise auction channels by, in dropdown order.
+ *
+ *   label  - shown in every dropdown and channel name
+ *   emoji  - prefix in dropdowns
+ *   query  - what is actually sent to eBay (the grade is prepended, e.g.
+ *            "PSA 10 (mtg, magic the gathering)"). "(a, b)" is eBay's OR syntax.
+ *   any_category - true to search all of eBay instead of the collectible-card-
+ *            games category. Needed for non-sport cards (Marvel, Star Wars,
+ *            movie/TV, most Disney), which eBay files outside that category.
+ *
+ * The key is stored in the database (searches.keywords, game columns), so
+ * rename keys only on a fresh install.
+ */
 function card_games(): array
 {
     return [
-        'pokemon'   => ['label' => 'Pokemon',     'emoji' => '\u{26a1}'],
-        'magic'     => ['label' => 'Magic: TG',   'emoji' => '\u{1f9d9}'],
-        'yugioh'    => ['label' => 'Yu-Gi-Oh!',   'emoji' => '\u{1f409}'],
-        'onepiece'  => ['label' => 'One Piece',   'emoji' => '\u{1f3f4}'],
-        'lorcana'   => ['label' => 'Lorcana',     'emoji' => '\u{1f3f0}'],
-        'digimon'   => ['label' => 'Digimon',     'emoji' => '\u{1f916}'],
+        'pokemon'       => ['label' => 'Pokémon',              'emoji' => "\u{26a1}",
+                            'query' => 'pokemon'],
+        'magic'         => ['label' => 'Magic: The Gathering', 'emoji' => "\u{1f9d9}",
+                            'query' => '(mtg, magic the gathering)'],
+        'onepiece'      => ['label' => 'One Piece',            'emoji' => "\u{1f3f4}\u{200d}\u{2620}\u{fe0f}",
+                            'query' => 'one piece'],
+        'yugioh'        => ['label' => 'Yu-Gi-Oh!',            'emoji' => "\u{1f409}",
+                            'query' => '(yugioh, yu-gi-oh)'],
+        'disney'        => ['label' => 'Disney',               'emoji' => "\u{1f3f0}",
+                            'query' => '(disney, lorcana)', 'any_category' => true],
+        'starwars'      => ['label' => 'Star Wars',            'emoji' => "\u{1f30c}",
+                            'query' => 'star wars', 'any_category' => true],
+        'marveldc'      => ['label' => 'Marvel / DC',          'emoji' => "\u{1f9b8}",
+                            'query' => '(marvel, dc comics, batman, superman, spider-man, x-men)', 'any_category' => true],
+        'anime'         => ['label' => 'Anime Trading Cards',  'emoji' => "\u{1f338}",
+                            'query' => '(anime, dragon ball, naruto, demon slayer, jujutsu kaisen, digimon, weiss schwarz, union arena)', 'any_category' => true],
+        'entertainment' => ['label' => 'Entertainment',        'emoji' => "\u{1f3ac}",
+                            'query' => '(garbage pail kids, harry potter, star trek, stranger things, wacky packages)', 'any_category' => true],
+        'gaming'        => ['label' => 'Gaming & Fantasy',     'emoji' => "\u{1f3b2}",
+                            'query' => '(flesh and blood, final fantasy, metazoo, sorcery contested realm, warhammer, dungeons dragons, grand archive)'],
     ];
 }
 
@@ -255,13 +282,42 @@ function card_brands(): array
             'one piece', 'op-01', 'op-02', 'op-03', 'op-04', 'op-05', 'op-06', 'op-07',
             'romance dawn', 'paramount war', 'pillars of strength', 'kingdoms of intrigue',
         ]],
-        'lorcana'    => ['label' => 'Disney Lorcana', 'match' => [
-            'lorcana', 'first chapter', 'rise of the floodborn', 'into the inklands',
-            'ursula', 'shimmering skies', 'azurite sea',
+        'disney'     => ['label' => 'Disney (incl. Lorcana)', 'match' => [
+            'disney', 'lorcana', 'first chapter', 'rise of the floodborn', 'into the inklands',
+            'ursula', 'shimmering skies', 'azurite sea', 'kakawow', 'pixar', 'disney100',
         ]],
-        'digimon'    => ['label' => 'Digimon', 'match' => ['digimon', 'bt-01', 'bt01']],
-        'topps-ccg'  => ['label' => 'Topps / other', 'match' => ['topps', 'garbage pail', 'star wars ccg', 'metazoo', 'flesh and blood']],
+        'starwars'   => ['label' => 'Star Wars', 'match' => [
+            'star wars', 'topps chrome star wars', 'star wars unlimited', 'star wars ccg', 'mandalorian',
+            'empire strikes back', 'return of the jedi', 'galaxy', 'finest star wars',
+        ]],
+        'marveldc'   => ['label' => 'Marvel / DC', 'match' => [
+            'marvel', 'dc comics', 'upper deck marvel', 'fleer ultra', 'marvel masterpieces', 'marvel universe',
+            'x-men', 'spider-man', 'batman', 'superman', 'wonder woman', 'avengers', 'skybox',
+        ]],
+        'anime'      => ['label' => 'Anime', 'match' => [
+            'anime', 'dragon ball', 'dbz', 'naruto', 'demon slayer', 'jujutsu kaisen', 'my hero academia',
+            'digimon', 'bt-01', 'bt01', 'weiss schwarz', 'union arena', 'hunter x hunter', 'sailor moon',
+        ]],
+        'entertainment' => ['label' => 'Entertainment (movies / TV / music)', 'match' => [
+            'garbage pail', 'gpk', 'wacky packages', 'harry potter', 'star trek', 'stranger things',
+            'jurassic park', 'ghostbusters', 'tmnt', 'simpsons', 'non-sport', 'non sport',
+        ]],
+        'gaming'     => ['label' => 'Gaming & Fantasy', 'match' => [
+            'flesh and blood', 'final fantasy', 'metazoo', 'sorcery', 'warhammer', 'dungeons',
+            'grand archive', 'altered tcg', 'world of warcraft',
+        ]],
     ];
+}
+
+/**
+ * The eBay search for a saved search's keywords: [query, any_category].
+ * Built-in channels store a card_games() key, which maps to real search terms;
+ * anything else (a custom member search) is sent as typed.
+ */
+function card_game_search(string $keywords): array
+{
+    $g = card_games()[$keywords] ?? null;
+    return $g === null ? [$keywords, false] : [$g['query'], !empty($g['any_category'])];
 }
 
 /** Does a lowercased listing title match a card_brands() key? */
@@ -310,10 +366,28 @@ function chase_cards(): array
             'luffy', 'shanks', 'zoro', 'nami', 'ace', 'law', 'yamato', 'kaido', 'boa hancock',
             'manga rare', 'alternate art',
         ],
-        'lorcana' => [
+        'disney' => [
             'elsa', 'mickey mouse', 'stitch', 'maleficent', 'ursula', 'enchanted', 'rapunzel',
+            'iridescent',
         ],
-        'digimon' => ['omnimon', 'agumon', 'wargreymon', 'gabumon', 'alternative art'],
+        'starwars' => [
+            'darth vader', 'boba fett', 'luke skywalker', 'yoda', 'grogu', 'mandalorian', 'han solo',
+            'princess leia', 'superfractor', 'printing plate',
+        ],
+        'marveldc' => [
+            'spider-man', 'wolverine', 'venom', 'deadpool', 'iron man', 'thor', 'hulk', 'batman',
+            'joker', 'superman', 'wonder woman', 'harley quinn', 'precious metal gems', 'pmg',
+        ],
+        'anime' => [
+            'goku', 'vegeta', 'naruto', 'sasuke', 'gojo', 'tanjiro', 'nezuko', 'luffy gear 5',
+            'omnimon', 'agumon', 'wargreymon', 'gabumon', 'alternative art', 'god rare',
+        ],
+        'entertainment' => [
+            'adam bomb', 'hermione', 'spock', 'wacky packages 1st series',
+        ],
+        'gaming' => [
+            'cold foil', 'rainbow foil', 'marvel rarity', 'fabled', 'arknight',
+        ],
     ];
 }
 
