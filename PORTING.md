@@ -67,10 +67,10 @@ titles**. These were found and rewritten by hand:
 
 - **Replace the hero image.** The hero is a full-width shop photo behind a navy
   wash, with the headline on the left and a floating deals panel on the right.
-  `assets/img/hero-shop.{webp,jpg}` is an illustrated placeholder. Supply a
-  landscape photo, 1920x1080 or larger, saved over both files. The left ~45%
-  sits under the dark wash and the headline, so put the people and the sign
-  centre-right. The page crops it with `object-position: 60% 35%`.
+  `assets/img/hero-shop.{webp,jpg}` is the shop photo (1448x1086). Its neon
+  sign still reads "Monster Card Shop" — swap in a version that says
+  TradingCard101 before launch. To replace it, save a landscape photo over
+  both files; the left ~45% sits under the dark wash and the headline. The page crops it with `object-position: 50% 12%`.
 - **Check the chase lists.** `chase_cards()` in `src/helpers.php` is curated
   from memory and is deliberately short. It drives the chase-card alert filter,
   so extend it with the cards your buyers actually chase.

@@ -169,7 +169,7 @@ $tools = [
     <!-- full-bleed shop photo behind the hero -->
     <picture class="hm-hero-bg" aria-hidden="true">
         <source srcset="/assets/img/hero-shop.webp" type="image/webp">
-        <img src="/assets/img/hero-shop.jpg" width="1920" height="1080" loading="eager" decoding="async" alt="">
+        <img src="/assets/img/hero-shop.jpg" width="1448" height="1086" loading="eager" decoding="async" alt="">
     </picture>
     <div class="hm-wrap hm-hero-grid">
         <div class="hm-hero-copy">

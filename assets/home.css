@@ -303,7 +303,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 800; letter-spacing: -.022em; line-heig
 /* ---------- hero: full-bleed photo, dark wash, floating deal feed ---------- */
 
 .hm-hero-bg { position: absolute; inset: 0; z-index: 0; display: block; }
-.hm-hero-bg img { width: 100%; height: 100%; object-fit: cover; object-position: 60% 35%; display: block; }
+.hm-hero-bg img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 12%; display: block; }
 /* navy wash: solid behind the copy, clearing toward the right so the shop
    reads through, plus a fade at the bottom into the proof strip */
 .hm-hero::before {
@@ -360,7 +360,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 800; letter-spacing: -.022em; line-heig
     padding: 4px 10px; border-radius: 999px;
 }
 .hm-feed-row .sc { flex: none; font-size: .86rem; font-weight: 800; color: #ffcf5a; font-variant-numeric: tabular-nums; }
-.hm-feed-note { justify-self: end; font-size: .68rem; color: rgba(195, 221, 247, .6); letter-spacing: .02em; }
+.hm-feed-note { justify-self: end; font-size: .68rem; color: rgba(195, 221, 247, .85); letter-spacing: .02em; background: rgba(10, 22, 38, .78); padding: 3px 10px; border-radius: 999px; }
 
 @keyframes hm-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
 
