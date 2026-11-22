@@ -1,0 +1,144 @@
+<?php
+declare(strict_types=1);
+
+/**
+ * Shared HTML layout for all three areas: public site, /member, /superadmin.
+ * Uses root-absolute URLs so it works from any folder depth.
+ */
+
+function nav_links(string $area): array
+{
+    return match ($area) {
+        'member' => [
+            ['/member/', 'Dashboard'],
+            ['/member/deals.php', 'AI Deals'],
+            ['/member/inventory.php', 'My Collection'],
+            ['/member/learn.php', 'Learn'],
+            ['/member/account.php', 'Account'],
+        ],
+        'admin' => [
+            ['/superadmin/', 'Dashboard'],
+            ['group' => '🗃️ My Collection', 'items' => [
+                ['/superadmin/mycards.php', 'My Cards'],
+                ['/superadmin/dailyplan.php', 'Daily Plan'],
+                ['/superadmin/collections.php', 'Collections'],
+            ]],
+            ['group' => '🔨 Auction', 'items' => [
+                ['/superadmin/auctions.php', 'Auctions'],
+                ['/superadmin/errorcards.php', 'Error Cards'],
+                ['/superadmin/snapshot.php', 'Snap Shot'],
+                ['/superadmin/lots.php', 'Lots'],
+                ['/superadmin/highbids.php', 'High Bids'],
+                ['/superadmin/comps.php', 'Comps'],
+                ['/superadmin/alerts.php', 'Alerts'],
+                ['/superadmin/searches.php', 'AI App'],
+            ]],
+            ['group' => '👥 Members', 'items' => [
+                ['/superadmin/members.php', 'Members'],
+                ['/superadmin/pricing.php', 'Pricing'],
+                ['/superadmin/content.php', 'Content'],
+            ]],
+            ['/superadmin/settings.php', 'Settings'],
+        ],
+        default => [
+            ['/', 'Home'],
+            ['/#features', 'Features'],
+            ['/errors.php', 'Error Cards'],
+            ['/#pricing', 'Pricing'],
+            ['/login.php', 'Log in'],
+        ],
+    };
+}
+
+function layout_header(string $title, string $area = 'public', ?string $metaDescription = null): void
+{
+    $home = $area === 'admin' ? '/superadmin/' : ($area === 'member' ? '/member/' : '/');
+    // Logged-in areas use a left sidebar; the public homepage keeps the top bar.
+    $sidebar = in_array($area, ['admin', 'member'], true);
+    $GLOBALS['__layout_sidebar'] = $sidebar;
+    $path = strtok((string)($_SERVER['REQUEST_URI'] ?? '/'), '?');
+    ?><!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><?= e($title) ?> · TradingCard101</title>
+    <?php if ($metaDescription !== null): ?>
+    <meta name="description" content="<?= e(mb_substr($metaDescription, 0, 300)) ?>">
+    <?php endif; ?>
+    <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body class="area-<?= e($area) ?><?= $sidebar ? ' has-sidebar' : '' ?>">
+<?php if ($sidebar): ?>
+<div class="shell">
+    <aside class="sidebar">
+        <a class="brand" href="<?= e($home) ?>">🃏 Trading<span>Card101</span><?php if ($area === 'admin'): ?> <small>admin</small><?php endif; ?></a>
+        <nav class="side-nav">
+            <?php foreach (nav_links($area) as $item):
+                if (isset($item['group'])):
+                    // Collapsible category — open when it contains the active page.
+                    $groupActive = false;
+                    foreach ($item['items'] as [$h, ]) {
+                        if ($path === $h) { $groupActive = true; break; }
+                    } ?>
+                    <details class="nav-group"<?= $groupActive ? ' open' : '' ?>>
+                        <summary><?= e($item['group']) ?></summary>
+                        <?php foreach ($item['items'] as [$href, $label]): ?>
+                            <a class="subnav<?= $path === $href ? ' active' : '' ?>" href="<?= e($href) ?>"><?= e($label) ?></a>
+                        <?php endforeach; ?>
+                    </details>
+                <?php else:
+                    [$href, $label] = $item;
+                    $isActive = ($path === $href)
+                        || (in_array($href, ['/superadmin/', '/member/'], true) && in_array($path, [$href, $href . 'index.php'], true)); ?>
+                    <a class="<?= $isActive ? 'active' : '' ?>" href="<?= e($href) ?>"><?= e($label) ?></a>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </nav>
+        <div class="side-foot">
+            <span class="user"><?= e(\TradingCard101\Auth::username()) ?></span>
+            <a class="logout" href="/logout.php">Log out</a>
+        </div>
+    </aside>
+    <div class="content">
+    <main class="container">
+<?php else: ?>
+<header class="topbar">
+    <a class="brand" href="<?= e($home) ?>">🃏 Trading<span>Card101</span></a>
+    <nav>
+        <?php foreach (nav_links($area) as [$href, $label]): ?>
+            <a href="<?= e($href) ?>"><?= e($label) ?></a>
+        <?php endforeach; ?>
+        <a class="btn btn-primary btn-sm" href="/signup.php">Join free</a>
+    </nav>
+</header>
+<main class="container">
+<?php endif; ?>
+<?php
+    if (!empty($_SESSION['flash'])) {
+        foreach ($_SESSION['flash'] as $f) {
+            echo '<div class="flash flash-' . e($f['type']) . '">' . e($f['msg']) . '</div>';
+        }
+        unset($_SESSION['flash']);
+    }
+}
+
+function layout_footer(): void
+{
+    $sidebar = $GLOBALS['__layout_sidebar'] ?? false;
+    ?>
+</main>
+<footer class="foot">TradingCard101 — learn the hobby, find the deals · <a href="/">tradingcard101.com</a></footer>
+<?php if ($sidebar): ?>
+    </div><!-- .content -->
+</div><!-- .shell -->
+<?php endif; ?>
+</body>
+</html>
+<?php
+}
+
+function flash(string $type, string $msg): void
+{
+    $_SESSION['flash'][] = ['type' => $type, 'msg' => $msg];
+}
