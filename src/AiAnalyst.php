@@ -406,7 +406,7 @@ final class AiAnalyst
                         ],
                         'properties' => [
                             'error_name'       => ['type' => 'string'],
-                            'game'            => ['type' => 'string', 'enum' => ['pokemon', 'magic', 'yugioh', 'onepiece', 'lorcana', 'digimon']],
+                            'game'            => ['type' => 'string', 'enum' => array_keys(\card_games())],
                             'year'             => ['type' => 'string'],
                             'set_name'         => ['type' => 'string'],
                             'card_number'      => ['type' => 'string'],
@@ -514,7 +514,7 @@ final class AiAnalyst
             'properties' => [
                 'ref'              => ['type' => 'string'],
                 'error_name'       => ['type' => 'string'],
-                'game'            => ['type' => 'string', 'enum' => ['pokemon', 'magic', 'yugioh', 'onepiece', 'lorcana', 'digimon']],
+                'game'            => ['type' => 'string', 'enum' => array_keys(\card_games())],
                 'year'             => ['type' => 'string'],
                 'set_name'         => ['type' => 'string'],
                 'card_number'      => ['type' => 'string'],

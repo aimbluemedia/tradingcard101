@@ -84,9 +84,10 @@ final class EbayClient
      * @param string $grade        e.g. "PSA 10" — appended to the query.
      * @param string $buyingOption AUCTION | FIXED_PRICE | ANY
      * @param int    $limit        Max results.
+     * @param bool   $anyCategory  true = search all of eBay, not just the card-games category.
      * @return array<int,array<string,mixed>> Normalised listing rows.
      */
-    public function search(string $query, string $grade, string $buyingOption = 'AUCTION', int $limit = 100): array
+    public function search(string $query, string $grade, string $buyingOption = 'AUCTION', int $limit = 100, bool $anyCategory = false): array
     {
         $fullQuery = trim($grade . ' ' . $query);
 
@@ -100,9 +101,12 @@ final class EbayClient
         $params = [
             'q'             => $fullQuery,
             'limit'         => (string)$limit,
-            // Collectible card games category for tighter results.
-            'category_ids'  => self::categoryId(),
         ];
+        // Collectible card games category for tighter results — except for
+        // non-sport categories (Marvel, Star Wars, ...) that eBay files elsewhere.
+        if (!$anyCategory) {
+            $params['category_ids'] = self::categoryId();
+        }
 
         $filters = [];
         if ($buyingOption !== 'ANY') {
