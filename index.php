@@ -166,6 +166,11 @@ $tools = [
 
 <!-- ===================== HERO ===================== -->
 <section class="hm-hero">
+    <!-- full-bleed shop photo behind the hero -->
+    <picture class="hm-hero-bg" aria-hidden="true">
+        <source srcset="/assets/img/hero-shop.webp" type="image/webp">
+        <img src="/assets/img/hero-shop.jpg" width="1448" height="1086" loading="eager" decoding="async" alt="">
+    </picture>
     <div class="hm-wrap hm-hero-grid">
         <div class="hm-hero-copy">
             <span class="hm-pill"><span class="dot"></span> Scanning eBay every <b>30 minutes</b></span>
@@ -187,45 +192,39 @@ $tools = [
             </div>
         </div>
 
-        <!-- shop photo, with today's top call and the email receipt floating over it -->
-        <div class="hm-shot">
-            <div class="hm-photo">
-                <picture>
-                    <source srcset="/assets/img/hero-desk.webp" type="image/webp">
-                    <img src="/assets/img/hero-desk.jpg" width="920" height="1149" loading="eager" decoding="async"
-                         alt="A seller at a desk with graded trading cards on the shelves behind, a laptop, card savers and a packed shipping box.">
-                </picture>
+        <!-- today's deal feed, floating over the shop photo -->
+        <div class="hm-feed">
+            <div class="hm-feed-ask">
+                <span class="k">AI verdict · just now</span>
+                <span class="q">&ldquo;Is this 1st Ed Charizard worth bidding on?&rdquo;</span>
+                <span class="a">BUY &mdash; listed 29% under 11 recent sales. Max bid $2,980.</span>
             </div>
 
-            <!-- a new deal lands -->
-            <div class="hm-chip hm-chip-new">
-                <span class="ic dark">⚡</span>
-                <span class="tx">New deal · <b>PSA 10 Charizard</b></span>
+            <div class="hm-feed-panel">
+                <div class="hm-feed-search">
+                    <span class="ic" aria-hidden="true">&#9906;</span>
+                    <span class="tx">PSA 10 &middot; Pok&eacute;mon, Magic, Yu-Gi-Oh</span>
+                    <span class="btn">Scanning</span>
+                </div>
+
+                <div class="hm-feed-row is-top">
+                    <span class="av" style="background:#e2492b">PK</span>
+                    <span class="who"><b>Charizard 1st Ed Base Set</b><small>PSA 10 &middot; ends in 4h 12m</small></span>
+                    <span class="tag">&minus;29%</span>
+                </div>
+                <div class="hm-feed-row">
+                    <span class="av" style="background:#1d6dc9">MG</span>
+                    <span class="who"><b>Black Lotus Unlimited</b><small>BGS 9.5 &middot; ends in 1d 3h</small></span>
+                    <span class="sc">&minus;18%</span>
+                </div>
+                <div class="hm-feed-row">
+                    <span class="av" style="background:#8a5cd6">YG</span>
+                    <span class="who"><b>Blue-Eyes White Dragon LOB</b><small>PSA 10 &middot; ends in 6h 40m</small></span>
+                    <span class="sc">&minus;22%</span>
+                </div>
             </div>
 
-            <!-- the free daily email -->
-            <div class="hm-chip hm-chip-mail">
-                <span class="hd"><span class="ic green">✉</span> Daily email sent</span>
-                <p>3 cards cleared to buy, 8 to watch and 2 new error cards.</p>
-                <span class="ft"><em>Free tier</em> <span>7:00am today</span></span>
-            </div>
-
-            <!-- the clock that makes it urgent -->
-            <div class="hm-chip hm-chip-time">
-                <span class="ic red">⏱</span>
-                <span class="tx">Ends in <b>4h 12m</b></span>
-            </div>
-
-            <!-- the number that decides it -->
-            <div class="hm-call">
-                <span class="k"><span class="dot"></span> Today's top call <em>sample</em></span>
-                <span class="nm">1999 Base Set Charizard 1st Ed</span>
-                <span class="mt">PSA 10 · median $4,180 across 11 sales</span>
-                <span class="row">
-                    <span class="bid"><span class="lbl">Your max bid</span><span class="v">$2,980</span></span>
-                    <span class="pl">+$640 net</span>
-                </span>
-            </div>
+            <span class="hm-feed-note">Sample deals &mdash; for illustration</span>
         </div>
     </div>
 </section>

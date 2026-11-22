@@ -2,13 +2,13 @@
    TradingCard101 — public landing page
    Light layout with a navy/blue brand, in the LeadCrazy mould: white and
    pale-blue bands, one deep-navy results panel, one solid blue CTA band,
-   navy footer. The blues are sampled from the shop photo used in the hero.
+   navy footer. The hero is a full-bleed shop photo under a navy wash.
    Self-contained: the app UI lives in style.css and the two never share a
    selector.
    ========================================================================== */
 
 :root {
-    /* brand blues — hue ~212, taken off the shop sign in the hero photo */
+    /* brand blues — hue ~212 */
     --blue-900: #0d1f33;
     --blue-800: #14314f;
     --blue-700: #1e3a5f;
@@ -163,18 +163,15 @@ h1, h2, h3, h4 { margin: 0; font-weight: 800; letter-spacing: -.022em; line-heig
 
 .hm-hero {
     position: relative; overflow: hidden;
-    padding: clamp(52px, 7vw, 86px) 0 clamp(60px, 7vw, 96px);
-    background:
-        radial-gradient(60% 70% at 85% 8%, rgba(29, 109, 201, .1), transparent 60%),
-        linear-gradient(180deg, var(--blue-50) 0%, #fdfeff 72%, var(--bg) 100%);
+    padding: clamp(64px, 8vw, 110px) 0 clamp(72px, 8vw, 120px);
+    background: var(--blue-900); color: #fff;
 }
-.hm-hero::after { content: ''; position: absolute; inset: auto 0 0 0; height: 1px; background: var(--border); }
-.hm-hero > * { position: relative; }
+.hm-hero > .hm-wrap { position: relative; }
 
 /* 40% copy / 60% photo, both columns the same height.
    The copy column sets the row height and the photo stretches to match it,
    so the two sides start and finish together. */
-.hm-hero-grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(28px, 3.4vw, 50px); align-items: stretch; }
+.hm-hero-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(28px, 3.4vw, 50px); align-items: stretch; }
 .hm-hero-copy { display: flex; flex-direction: column; justify-content: center; padding: clamp(18px, 4vh, 46px) 0; }
 /* flex children stretch across the cross axis by default, which would pull
    the status pill out to the full column width */
@@ -186,9 +183,8 @@ h1, h2, h3, h4 { margin: 0; font-weight: 800; letter-spacing: -.022em; line-heig
 
 .hm-pill {
     display: inline-flex; align-items: center; gap: 9px; padding: 6px 15px 6px 11px;
-    border-radius: 999px; background: #fff; border: 1px solid var(--border-2);
-    font-size: .8rem; font-weight: 600; color: var(--ink-2); margin-bottom: 24px;
-    box-shadow: 0 2px 8px -4px rgba(15, 31, 51, .18);
+    border-radius: 999px; background: rgba(255, 255, 255, .08); border: 1px solid rgba(195, 221, 247, .22);
+    font-size: .8rem; font-weight: 600; color: var(--blue-200); margin-bottom: 24px;
 }
 .hm-pill .dot {
     width: 7px; height: 7px; border-radius: 50%; background: var(--green);
@@ -196,14 +192,14 @@ h1, h2, h3, h4 { margin: 0; font-weight: 800; letter-spacing: -.022em; line-heig
     animation: hm-pulse 2.2s ease-in-out infinite;
 }
 @keyframes hm-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
-.hm-pill b { color: var(--ink); font-weight: 700; }
+.hm-pill b { color: #fff; font-weight: 700; }
 
 /* the copy column is 40% of the row, so the display type is sized to that
    column rather than to the viewport */
-.hm-hero h1 { font-size: clamp(2rem, 3.5vw, 3.05rem); letter-spacing: -.032em; color: var(--blue-700); }
-.hm-hero h1 .hl { color: var(--blue-600); }
-.hm-hero-sub { font-size: clamp(.98rem, 1.3vw, 1.08rem); color: var(--ink-2); margin: 18px 0 0; max-width: 54ch; }
-.hm-hero-sub strong { color: var(--ink); }
+.hm-hero h1 { font-size: clamp(2.2rem, 4.4vw, 3.9rem); line-height: 1.04; letter-spacing: -.035em; color: #fff; max-width: 15ch; }
+.hm-hero h1 .hl { color: var(--blue-300); text-decoration: underline; text-decoration-thickness: .06em; text-underline-offset: .12em; }
+.hm-hero-sub { font-size: clamp(1rem, 1.35vw, 1.14rem); color: rgba(255, 255, 255, .82); margin: 20px 0 0; max-width: 54ch; }
+.hm-hero-sub strong { color: #fff; }
 
 /* hero email capture */
 .hm-capture { margin: 24px 0 0; }
@@ -212,7 +208,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 800; letter-spacing: -.022em; line-heig
 .hm-capture form { display: flex; gap: 10px; max-width: 492px; }
 .hm-capture input[type=email] {
     flex: 1; min-width: 0; padding: 14px 18px; border-radius: 999px;
-    background: #fff; border: 1px solid var(--border-2);
+    background: #fff; border: 1px solid transparent;
     color: var(--ink); font-size: .98rem; font-family: inherit;
     box-shadow: 0 2px 8px -5px rgba(15, 31, 51, .25);
     transition: border-color .15s ease, box-shadow .15s ease;
@@ -222,9 +218,9 @@ h1, h2, h3, h4 { margin: 0; font-weight: 800; letter-spacing: -.022em; line-heig
     outline: none; border-color: var(--blue-500);
     box-shadow: 0 0 0 4px rgba(29, 109, 201, .14);
 }
-.hm-capture-note { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 16px 0 0; font-size: .85rem; color: var(--muted); }
+.hm-capture-note { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 16px 0 0; font-size: .85rem; color: rgba(255, 255, 255, .78); }
 .hm-capture-note span { display: inline-flex; align-items: center; gap: 7px; }
-.hm-capture-note span::before { content: '✓'; color: var(--green); font-weight: 800; }
+.hm-capture-note span::before { content: '✓'; color: var(--green-2); font-weight: 800; }
 
 /* Grid children must be allowed to shrink: the playbook panel has a wide
    min-content size and would otherwise blow the single-column layout out
@@ -239,67 +235,6 @@ h1, h2, h3, h4 { margin: 0; font-weight: 800; letter-spacing: -.022em; line-heig
 @media (max-width: 520px) {
     .hm-capture form { flex-direction: column; }
     .hm-capture input[type=email], .hm-capture .hm-btn { width: 100%; }
-}
-
-/* ---------- hero visual: photo + floating playbook panel ---------- */
-
-.hm-shot { position: relative; }
-
-.hm-photo {
-    position: relative; border-radius: 22px; overflow: hidden;
-    box-shadow: 0 30px 60px -28px rgba(13, 31, 51, .45), 0 0 0 1px rgba(13, 31, 51, .05);
-    /* Portrait while the hero is stacked; on the two-column layout below the
-       height comes from the copy column instead. Never cap the height while
-       aspect-ratio is in play — that shrinks the width to match and the photo
-       silently loses its share of the row. */
-    aspect-ratio: 4 / 5; background: var(--blue-100);
-}
-.hm-photo img { width: 100%; max-width: 100%; height: 100%; object-fit: cover; display: block; }
-
-@media (min-width: 1001px) {
-    /* The image is taken out of flow so it contributes no intrinsic height —
-       otherwise its 1149px would set the row height and the stretch would
-       have nothing to do. */
-    .hm-photo { aspect-ratio: auto; height: 100%; min-height: 470px; }
-    .hm-photo picture { position: absolute; inset: 0; display: block; }
-    .hm-photo img { position: absolute; inset: 0; object-position: 50% 14%; }
-}
-.hm-photo::after {
-    content: ''; position: absolute; inset: 0; pointer-events: none;
-    background: linear-gradient(200deg, transparent 48%, rgba(13, 31, 51, .3) 100%);
-}
-
-/* today's top call — the compact card floating over the photo's lower-left */
-.hm-call {
-    /* anchored to the photo's bottom edge at every width */
-    position: absolute; left: -28px; bottom: 34px; width: min(300px, 86%); z-index: 5;
-    display: grid; gap: 2px; padding: 15px 17px 14px;
-    background: #fff; border-radius: 15px;
-    box-shadow: 0 24px 50px -16px rgba(13, 31, 51, .4), 0 0 0 1px rgba(13, 31, 51, .05);
-    animation: hm-float 5.5s ease-in-out infinite; animation-delay: -4.2s;
-}
-.hm-call .k {
-    display: flex; align-items: center; gap: 7px; margin-bottom: 7px;
-    font-size: .62rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
-}
-.hm-call .k .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 3px rgba(22, 163, 74, .16); }
-.hm-call .k em {
-    font-style: normal; margin-left: auto; letter-spacing: .08em;
-    color: var(--muted-2); background: var(--bg-soft); border: 1px solid var(--border);
-    padding: 2px 7px; border-radius: 999px; font-size: .55rem;
-}
-.hm-call .nm { font-size: .94rem; font-weight: 800; letter-spacing: -.022em; line-height: 1.25; color: var(--blue-700); }
-.hm-call .mt { font-size: .76rem; color: var(--muted); }
-.hm-call .row {
-    display: flex; align-items: center; justify-content: space-between; gap: 12px;
-    margin-top: 11px; padding-top: 11px; border-top: 1px solid var(--border);
-}
-.hm-call .row .lbl { display: block; font-size: .6rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; color: var(--muted-2); }
-.hm-call .row .v { display: block; font-size: 1.5rem; font-weight: 800; letter-spacing: -.04em; line-height: 1.1; font-variant-numeric: tabular-nums; }
-.hm-call .row .pl {
-    flex: none; font-size: .78rem; font-weight: 800; font-variant-numeric: tabular-nums;
-    color: var(--green); background: var(--green-50);
-    border: 1px solid #c9eeda; padding: 5px 10px; border-radius: 999px;
 }
 
 /* the full product panel (How it works) */
@@ -365,77 +300,76 @@ h1, h2, h3, h4 { margin: 0; font-weight: 800; letter-spacing: -.022em; line-heig
 }
 .hm-mock-foot .pb { margin-left: auto; font-weight: 700; color: var(--blue-600); }
 
-/* ---------- the chips that spill off the photo's edges ---------- */
+/* ---------- hero: full-bleed photo, dark wash, floating deal feed ---------- */
 
-.hm-chip {
-    position: absolute; z-index: 4;
-    background: #fff; border-radius: 14px; padding: 11px 15px;
-    box-shadow: 0 18px 40px -14px rgba(13, 31, 51, .34), 0 0 0 1px rgba(13, 31, 51, .05);
-    animation: hm-float 5.5s ease-in-out infinite;
+.hm-hero-bg { position: absolute; inset: 0; z-index: 0; display: block; }
+.hm-hero-bg img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 12%; display: block; }
+/* navy wash: solid behind the copy, clearing toward the right so the shop
+   reads through, plus a fade at the bottom into the proof strip */
+.hm-hero::before {
+    content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background:
+        linear-gradient(90deg, rgba(10, 22, 38, .94) 0%, rgba(10, 22, 38, .84) 34%, rgba(10, 22, 38, .45) 62%, rgba(10, 22, 38, .3) 100%),
+        linear-gradient(180deg, rgba(10, 22, 38, 0) 70%, rgba(10, 22, 38, .55) 100%);
 }
+.hm-hero > .hm-wrap { z-index: 2; }
+
+/* floating feed — right column, vertically centred against the copy */
+.hm-feed { position: relative; align-self: center; justify-self: end; width: min(100%, 520px); display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+
+.hm-feed-ask, .hm-feed-panel {
+    background: rgba(13, 31, 51, .72);
+    -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    border: 1px solid rgba(195, 221, 247, .16); border-radius: 18px;
+    box-shadow: 0 30px 60px -24px rgba(0, 0, 0, .6);
+    color: #fff;
+}
+.hm-feed-ask {
+    justify-self: end; width: min(100%, 330px); padding: 15px 18px; display: grid; gap: 5px;
+    animation: hm-float 6s ease-in-out infinite;
+}
+.hm-feed-ask .k { font-size: .66rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--blue-300); }
+.hm-feed-ask .q { font-size: .92rem; font-weight: 700; line-height: 1.35; }
+.hm-feed-ask .a { font-size: .82rem; color: var(--blue-200); line-height: 1.4; }
+
+.hm-feed-panel { padding: 16px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+.hm-feed-search {
+    display: flex; align-items: center; gap: 10px; padding: 9px 9px 9px 14px;
+    background: rgba(255, 255, 255, .06); border: 1px solid rgba(195, 221, 247, .18); border-radius: 12px;
+}
+.hm-feed-search .ic { color: var(--blue-300); font-size: 1rem; }
+.hm-feed-search .tx { flex: 1; min-width: 0; font-size: .9rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hm-feed-search .btn {
+    flex: none; font-size: .78rem; font-weight: 800; color: #fff; background: var(--blue-600);
+    padding: 8px 13px; border-radius: 9px;
+}
+.hm-feed-row {
+    display: flex; align-items: center; gap: 13px; padding: 12px 14px;
+    border-radius: 12px; background: rgba(255, 255, 255, .03); border: 1px solid rgba(195, 221, 247, .08);
+}
+.hm-feed-row.is-top { background: rgba(29, 109, 201, .22); border-color: rgba(61, 138, 224, .55); }
+.hm-feed-row .av {
+    width: 40px; height: 40px; flex: none; border-radius: 11px; display: grid; place-items: center;
+    font-size: .8rem; font-weight: 800; color: #fff;
+}
+.hm-feed-row .who { flex: 1; min-width: 0; display: grid; }
+.hm-feed-row .who b { font-size: .93rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hm-feed-row .who small { font-size: .76rem; color: var(--blue-200); opacity: .85; }
+.hm-feed-row .tag {
+    flex: none; font-size: .74rem; font-weight: 800; color: #3b2a00; background: #ffcf5a;
+    padding: 4px 10px; border-radius: 999px;
+}
+.hm-feed-row .sc { flex: none; font-size: .86rem; font-weight: 800; color: #ffcf5a; font-variant-numeric: tabular-nums; }
+.hm-feed-note { justify-self: end; font-size: .68rem; color: rgba(195, 221, 247, .85); letter-spacing: .02em; background: rgba(10, 22, 38, .78); padding: 3px 10px; border-radius: 999px; }
+
 @keyframes hm-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
 
-.hm-chip .ic {
-    width: 30px; height: 30px; flex: none; border-radius: 9px;
-    display: grid; place-items: center; font-size: .9rem; color: #fff;
-}
-.hm-chip .ic.dark  { background: var(--blue-900); }
-.hm-chip .ic.green { background: var(--green); }
-.hm-chip .ic.red   { background: #e5484d; }
-.hm-chip .tx { font-size: .82rem; font-weight: 600; color: var(--ink-2); white-space: nowrap; }
-.hm-chip .tx b { color: var(--ink); font-weight: 800; }
-
-/* single-row pills */
-.hm-chip-new, .hm-chip-time {
-    display: flex; align-items: center; gap: 10px;
-    border-radius: 999px; padding: 8px 17px 8px 8px;
-}
-.hm-chip-new  { top: 32px;  left: -48px; animation-delay: -1.2s; }
-.hm-chip-time { top: 32%;   right: -38px; animation-delay: -3s; }
-
-/* the daily-email card */
-.hm-chip-mail {
-    top: -16px; right: -36px; width: 262px; display: grid; gap: 7px;
-    padding: 13px 15px; animation-delay: -2.4s;
-}
-.hm-chip-mail .hd {
-    display: flex; align-items: center; gap: 10px;
-    font-size: .85rem; font-weight: 800; letter-spacing: -.015em; color: var(--ink);
-}
-.hm-chip-mail p { margin: 0; font-size: .76rem; color: var(--muted); line-height: 1.45; }
-.hm-chip-mail .ft {
-    display: flex; align-items: center; justify-content: space-between; gap: 10px;
-    font-size: .7rem; color: var(--muted-2); padding-top: 7px; border-top: 1px solid var(--border);
-}
-.hm-chip-mail .ft em { font-style: normal; font-weight: 800; color: var(--green); }
-
-/* The container is 1320 wide; below ~1400 the gutters are too thin for the
-   full spill and the right-hand chips would be clipped by the viewport. */
-@media (max-width: 1400px) {
-    .hm-chip-new  { left: -22px; }
-    .hm-chip-time { right: -16px; }
-    .hm-chip-mail { right: -16px; }
-    .hm-call      { left: -26px; }
-}
 @media (max-width: 1000px) {
-    /* width:100% is required — auto side margins opt a grid item out of
-       `stretch`, which would size it to fit-content and overflow the track. */
-    .hm-shot { width: 100%; max-width: 540px; margin: 46px auto 0; }
-    .hm-chip-new { left: -14px; }
-    .hm-chip-time, .hm-chip-mail { right: -14px; }
-    .hm-call { left: -14px; }
-}
-@media (max-width: 700px) {
-    /* the chips sit over the subject's face at this width — drop them and let
-       the one card that carries the pitch (the max bid) do the work */
-    .hm-chip { display: none; }
+    .hm-feed { justify-self: stretch; width: 100%; max-width: 560px; margin: 36px auto 0; }
+    .hm-hero::before { background: linear-gradient(180deg, rgba(10, 22, 38, .88) 0%, rgba(10, 22, 38, .78) 100%); }
 }
 @media (max-width: 560px) {
-    /* stays over the photo's bottom edge here too, rather than dropping
-       below it into the flow */
-    /* insets, not translateX — the float keyframes own `transform` */
-    .hm-call { left: 12px; right: 12px; width: auto; bottom: 16px; }
-    .hm-call .row .v { font-size: 1.35rem; }
+    .hm-feed-ask { width: 100%; }
 }
 
 /* ---------- proof strip ---------- */
@@ -772,6 +706,6 @@ input[type=range].hm-range::-moz-range-thumb {
 
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
-    .hm-chip, .hm-call, .hm-pill .dot { animation: none; }
+    .hm-feed-ask, .hm-pill .dot { animation: none; }
     .hm-btn:hover, .hm-step:hover, .hm-tool:hover { transform: none; }
 }
