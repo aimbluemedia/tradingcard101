@@ -139,6 +139,7 @@ h1, h2, h3, h4 { margin: 0; font-weight: 800; letter-spacing: -.022em; line-heig
 
 .hm-brand { display: flex; align-items: center; gap: 9px; font-size: 1.14rem; font-weight: 800; letter-spacing: -.03em; color: var(--blue-700); }
 .hm-brand b { color: var(--blue-600); font-weight: 800; }
+.hm-brand .wm { white-space: nowrap; }
 .hm-brand .chip {
     width: 30px; height: 30px; flex: none; border-radius: 9px; display: grid; place-items: center;
     background: var(--blue-700); font-size: .95rem;
