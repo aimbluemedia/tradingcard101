@@ -66,7 +66,7 @@ function layout_header(string $title, string $area = 'public', ?string $metaDesc
     <?php if ($metaDescription !== null): ?>
     <meta name="description" content="<?= e(mb_substr($metaDescription, 0, 300)) ?>">
     <?php endif; ?>
-    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="stylesheet" href="/assets/style.css?v=<?= (int) @filemtime(dirname(__DIR__) . '/assets/style.css') ?>">
 </head>
 <body class="area-<?= e($area) ?><?= $sidebar ? ' has-sidebar' : '' ?>">
 <?php if ($sidebar): ?>
