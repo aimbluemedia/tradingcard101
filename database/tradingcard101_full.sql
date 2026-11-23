@@ -1,11 +1,12 @@
 -- ==========================================================================
--- TradingCard101 — complete database (19 tables + starter data)
+-- TradingCard101 — complete database (20 tables + starter data)
 --
 -- Import into an EMPTY database in phpMyAdmin:
 --   select the database → Import → choose this file → Go
 --
 -- Creates the same 19 tables as SportCard101, with TradingCard101's columns
--- (game, first_ed, chase, ...). Seeds the Free/Pro plans, site settings and
+-- (game, first_ed, chase, ...), plus alert_emails for the members' Deal
+-- Alerts history. Seeds the Free/Pro plans, site settings and
 -- one sample lesson. Creates NO user — make the superadmin afterwards by
 -- visiting /setup.php (then delete setup.php from the server).
 --
@@ -257,6 +258,15 @@ CREATE TABLE IF NOT EXISTS `inventory_snapshots` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_user_day` (`user_id`,`snap_date`),
   CONSTRAINT `fk_snap_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `alert_emails` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `sent_at` datetime NOT NULL,
+  `match_count` int(10) unsigned NOT NULL DEFAULT 0,
+  `matches` mediumtext NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_sent` (`sent_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `alert_triggers` (
