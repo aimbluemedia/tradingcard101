@@ -43,6 +43,8 @@ final class DealAlerts
         }
         \set_setting('alerts_last_error', '');
         \set_setting('alerts_last_sent', date('Y-m-d H:i:s'));
+        // Keep a copy so members can browse past alert emails.
+        self::logEmail($pdo, $matches);
 
         $mark = $pdo->prepare('UPDATE listings SET notified = 1 WHERE id = ?');
         foreach ($matches as $m) {
@@ -197,6 +199,82 @@ final class DealAlerts
             }
         }
         return true;
+    }
+
+    /** How long sent alert emails are kept for the members' history page. */
+    public const HISTORY_DAYS = 90;
+
+    /** Create the sent-alerts log when missing (idempotent). */
+    public static function ensureLogTable(PDO $pdo): void
+    {
+        $pdo->exec(
+            'CREATE TABLE IF NOT EXISTS alert_emails (
+                id          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+                sent_at     DATETIME     NOT NULL,
+                match_count INT UNSIGNED NOT NULL DEFAULT 0,
+                matches     MEDIUMTEXT   NOT NULL,
+                PRIMARY KEY (id),
+                KEY idx_sent (sent_at)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4'
+        );
+    }
+
+    /**
+     * Record one sent alert email: when (UTC) and a snapshot of every auction
+     * in it, as it stood at send time. Never throws — a logging failure must
+     * not undo an email that has already gone out.
+     */
+    public static function logEmail(PDO $pdo, array $matches): void
+    {
+        try {
+            self::ensureLogTable($pdo);
+            $snap = array_map(fn ($m) => [
+                'item'     => (string) ($m['ebay_item_id'] ?? ''),
+                'title'    => (string) ($m['title'] ?? ''),
+                'card'     => (string) (($m['ai_card'] ?? '') ?: ($m['title'] ?? '')),
+                'price'    => (float) ($m['price'] ?? 0),
+                'currency' => (string) (($m['currency'] ?? '') ?: 'USD'),
+                'bids'     => (int) ($m['bid_count'] ?? 0),
+                'end_time' => (string) ($m['end_time'] ?? ''),
+                'url'      => (string) ($m['item_url'] ?? ''),
+                'game'     => (string) ($m['game'] ?? ''),
+                'grade'    => (string) ($m['grade'] ?? ''),
+                'median'   => !empty($m['comp']) ? (float) $m['comp']['median'] : null,
+                'sales'    => !empty($m['comp']) ? (int) $m['comp']['count'] : null,
+                'under'    => $m['under_pct'] ?? null,
+                'triggers' => array_values($m['triggers'] ?? []),
+            ], $matches);
+            $pdo->prepare('INSERT INTO alert_emails (sent_at, match_count, matches) VALUES (UTC_TIMESTAMP(), ?, ?)')
+                ->execute([count($snap), json_encode($snap, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)]);
+            $pdo->exec('DELETE FROM alert_emails WHERE sent_at < UTC_TIMESTAMP() - INTERVAL ' . self::HISTORY_DAYS . ' DAY');
+        } catch (\Throwable $e) {
+            // History is a convenience; the email itself already went out.
+        }
+    }
+
+    /**
+     * Sent alert emails, newest first, each with its decoded auctions.
+     *
+     * @return array<int,array{id:int,sent_at:string,match_count:int,matches:array}>
+     */
+    public static function history(PDO $pdo, int $limit = 200): array
+    {
+        try {
+            self::ensureLogTable($pdo);
+            $rows = $pdo->query(
+                'SELECT id, sent_at, match_count, matches FROM alert_emails
+                 ORDER BY sent_at DESC, id DESC LIMIT ' . max(1, $limit)
+            )->fetchAll();
+        } catch (\Throwable $e) {
+            return [];
+        }
+        foreach ($rows as &$r) {
+            $r['id'] = (int) $r['id'];
+            $r['match_count'] = (int) $r['match_count'];
+            $r['matches'] = json_decode((string) $r['matches'], true) ?: [];
+        }
+        unset($r);
+        return $rows;
     }
 
     /** Send the deal digest (HTML with a plain-text fallback). */

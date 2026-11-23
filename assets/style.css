@@ -340,3 +340,35 @@ hr { border: none; border-top: 1px solid var(--border); }
 .tab { padding: 8px 14px; border-radius: 8px 8px 0 0; color: var(--muted); font-weight: 600; }
 .tab:hover { color: var(--text); text-decoration: none; background: var(--panel); }
 .tab-active { background: var(--panel); color: var(--accent); border: 1px solid var(--border); border-bottom: 2px solid var(--accent); }
+
+/* ---------- Deal Alerts history (member + admin) ---------- */
+.ah-day { margin: 0 0 26px; }
+.ah-day-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    font-size: 1.1rem; margin: 0 0 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
+}
+.ah-day-head span { font-size: .82rem; font-weight: 500; color: var(--muted); }
+.ah-email { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; }
+.ah-email > summary {
+    cursor: pointer; list-style: none; display: flex; gap: 12px; align-items: baseline;
+    padding: 14px 18px; flex-wrap: wrap;
+}
+.ah-email > summary::-webkit-details-marker { display: none; }
+.ah-email > summary::before { content: '▸'; color: var(--muted); }
+.ah-email[open] > summary::before { content: '▾'; }
+.ah-email[open] > summary { border-bottom: 1px solid var(--border); }
+.ah-time { font-weight: 800; color: var(--accent); font-variant-numeric: tabular-nums; }
+.ah-count { color: var(--text); }
+.ah-list { list-style: none; margin: 0; padding: 0; }
+.ah-item { padding: 16px 18px; border-bottom: 1px solid var(--border); }
+.ah-item:last-child { border-bottom: 0; }
+.ah-item.is-ended { opacity: .6; }
+.ah-card { font-weight: 700; font-size: 1rem; line-height: 1.35; overflow-wrap: anywhere; }
+.ah-line, .ah-comp, .ah-trig { font-size: .86rem; color: var(--muted); margin-top: 4px; }
+.ah-line b { color: var(--text); }
+.ah-comp.is-under b { color: var(--green); }
+.ah-trig { font-size: .8rem; }
+.ah-item .btn { margin-top: 10px; }
+.ah-ends { white-space: nowrap; }
+.ah-more { margin: 0; padding: 12px 18px; color: var(--muted); font-size: .86rem; border-top: 1px solid var(--border); }
+.ah-keep { color: var(--muted); font-size: .8rem; text-align: center; margin: 20px 0 0; }
