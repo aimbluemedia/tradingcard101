@@ -201,6 +201,102 @@ final class DealAlerts
         return true;
     }
 
+    /**
+     * Everything that has to be true before an alert email can go out, checked
+     * in pipeline order. Each row: ['state' => ok|warn|fail|info, 'label', 'detail'].
+     * Read-only; shown at the top of the Alerts page.
+     *
+     * @return array<int,array{state:string,label:string,detail:string}>
+     */
+    public static function healthCheck(PDO $pdo): array
+    {
+        $rows = [];
+        $add  = function (string $state, string $label, string $detail = '') use (&$rows): void {
+            $rows[] = ['state' => $state, 'label' => $label, 'detail' => $detail];
+        };
+        $count = function (string $sql) use ($pdo): ?int {
+            try {
+                return (int) $pdo->query($sql)->fetchColumn();
+            } catch (\Throwable $e) {
+                return null;
+            }
+        };
+
+        // 1. Switched on, with somewhere to send.
+        $on = (string) \setting('notify_enabled', '0') === '1';
+        $add($on ? 'ok' : 'fail', 'Email alerts turned on',
+            $on ? '' : 'Tick “Email alerts turned on” in Email settings below and Save.');
+        $to = trim((string) \setting('notify_email', ''));
+        $add($to !== '' ? 'ok' : 'fail', 'Alert email address',
+            $to !== '' ? $to : 'Enter the address to send alerts to in Email settings below and Save.');
+
+        // 2. Something to match against.
+        $trig = $count('SELECT COUNT(*) FROM alert_triggers WHERE active = 1');
+        $add(($trig ?? 0) > 0 ? 'ok' : 'fail', 'Active triggers',
+            $trig === null ? 'The alert_triggers table is missing.'
+                : ($trig > 0 ? "{$trig} active" : 'Add a trigger above (or resume a paused one).'));
+
+        // 3. Something to scan. Alerts only consider PSA auction channels.
+        $chan = $count("SELECT COUNT(*) FROM searches WHERE active = 1 AND grade LIKE 'PSA %'");
+        $add(($chan ?? 0) > 0 ? 'ok' : 'fail', 'PSA auction channels to scan',
+            ($chan ?? 0) > 0 ? "{$chan} active"
+                : 'None yet. Open Auction → Auctions, pick PSA and a grade, and press Scan once — that creates the channels the cron job scans.');
+
+        // 4. Scans actually running.
+        $lastRun = (string) \setting('cron_last_run', '');
+        $status  = (string) \setting('cron_last_status', '');
+        if ($lastRun === '') {
+            $add('fail', 'Automatic scans (cron)', 'No scan has ever completed. Check the cron job command and the Cron secret key in Settings.');
+        } else {
+            $mins = max(0, (int) floor((time() - (int) strtotime($lastRun)) / 60));
+            $ago  = $mins < 60 ? "{$mins} min ago" : (int) floor($mins / 60) . 'h ago';
+            $stale = $mins > 45;
+            $add($stale ? 'fail' : 'ok', 'Automatic scans (cron)',
+                'Last scan ' . $ago . ($status !== '' ? ' — ' . $status : '')
+                . ($stale ? '. Scans should run every 30 min: check the cron job and the Cron secret key in Settings.' : ''));
+            if (str_contains($status, '(mock)')) {
+                $add('warn', 'eBay data', 'Scans are using SAMPLE data, not live eBay. Add your eBay keys in Settings.');
+            }
+        }
+
+        // 5. Live auctions to alert on.
+        $live = $count("SELECT COUNT(*) FROM listings l JOIN searches s ON s.id = l.search_id
+                        WHERE l.buying_option = 'AUCTION' AND l.end_time > UTC_TIMESTAMP() AND s.grade LIKE 'PSA %'");
+        $add(($live ?? 0) > 0 ? 'ok' : 'fail', 'Live PSA auctions captured',
+            ($live ?? 0) > 0 ? "{$live} live" : 'None — scans have not captured any live auctions yet.');
+        if (($trig ?? 0) > 0 && ($live ?? 0) > 0) {
+            $pending = count(self::evaluate($pdo, false)['matches']);
+            $add('info', 'Waiting to be emailed', $pending > 0
+                ? "{$pending} new auction(s) match a trigger and will go out on the next scan (or press “Run alerts now”)."
+                : 'Nothing new matches right now — each auction is only emailed once. Use “Preview matches” to see why.');
+        }
+
+        // 6. Delivery.
+        $host = trim((string) \setting('smtp_host', ''));
+        $user = trim((string) \setting('smtp_user', ''));
+        $from = trim((string) \setting('notify_from', '')) ?: 'alerts@tradingcard101.com';
+        if ($host === '') {
+            $add('warn', 'Sending method', 'PHP mail() — no SMTP set. Hostinger often accepts these and then silently drops them. Set SMTP below (smtp.hostinger.com, port 465 SSL, a real tradingcard101.com mailbox).');
+        } else {
+            $add('ok', 'Sending method', "SMTP via {$host}");
+            if ($user !== '' && strcasecmp($from, $user) !== 0) {
+                $add('fail', '“From” address matches SMTP login',
+                    "“From” is {$from} but SMTP logs in as {$user}. Hostinger rejects mail whose From differs from the mailbox — set “From” to {$user}, or log in with a tradingcard101.com mailbox.");
+            }
+        }
+        $err  = trim((string) \setting('alerts_last_error', ''));
+        $sent = (string) \setting('alerts_last_sent', '');
+        if ($err !== '') {
+            $add('fail', 'Last send attempt', 'FAILED: ' . $err);
+        } elseif ($sent !== '') {
+            $add('ok', 'Last send attempt', 'Sent ' . date('M j, g:ia', (int) strtotime($sent)));
+        } else {
+            $add('info', 'Last send attempt', 'No alert email has been attempted yet.');
+        }
+
+        return $rows;
+    }
+
     /** How long sent alert emails are kept for the members' history page. */
     public const HISTORY_DAYS = 90;
 

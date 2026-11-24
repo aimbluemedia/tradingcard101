@@ -252,6 +252,27 @@ if ($alertErr !== ''): ?>
     </div>
 <?php endif; ?>
 
+<?php $health = DealAlerts::healthCheck($pdo);
+$healthBad = count(array_filter($health, fn ($h) => $h['state'] === 'fail')); ?>
+<details class="card health"<?= $healthBad ? ' open' : '' ?>>
+    <summary>
+        <strong>Alert email health check</strong>
+        <span class="health-sum <?= $healthBad ? 'bad' : 'good' ?>"><?= $healthBad ? "{$healthBad} problem" . ($healthBad === 1 ? '' : 's') . ' stopping emails' : 'Everything needed to send is in place' ?></span>
+    </summary>
+    <ul class="health-list">
+        <?php foreach ($health as $h): ?>
+            <li class="h-<?= e($h['state']) ?>">
+                <span class="h-ic"><?= ['ok' => '✅', 'warn' => '⚠️', 'fail' => '❌', 'info' => 'ℹ️'][$h['state']] ?? '' ?></span>
+                <span><strong><?= e($h['label']) ?></strong><?php if ($h['detail'] !== ''): ?> — <?= e($h['detail']) ?><?php endif; ?></span>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+    <p class="sub" style="margin:10px 0 0">
+        <a href="/superadmin/alerts.php?test=1">✉️ Send test email</a> checks delivery on its own ·
+        <a href="/superadmin/alerts.php?preview=1#preview">🔍 Preview matches</a> checks matching on its own.
+    </p>
+</details>
+
 <!-- Add / edit trigger (top) -->
 <h2 id="form" style="margin-top:0"><?= $editing ? 'Edit trigger' : 'Add a trigger' ?></h2>
 <form method="post" class="searchbar triggerbar"><?= csrf_field() ?>
